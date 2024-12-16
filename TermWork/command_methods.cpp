@@ -1,5 +1,4 @@
 #include "command.h"
-#include <ctime>
 
 Command::Command(double P1, double P2, int N, int M)
 {
