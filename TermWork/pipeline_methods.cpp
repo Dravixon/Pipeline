@@ -36,7 +36,6 @@ int Pipeline::getLongestCommandTime()
 
 void Pipeline::SetShifts()
 {
-	vector<int> memoryAccess(this->getLongestCommandTime(), 0);
 	vector<int> op2MemAccess(this->getLongestCommandTime(), 0);
 	vector<int> op2RegAccess(this->getLongestCommandTime(), 0);
 	vector<int> calculateAccess(this->getLongestCommandTime(), 0);
@@ -52,9 +51,9 @@ void Pipeline::SetShifts()
 		//preOp2Shift calculation
 		if (List[i].op2Mem)
 		{
-			while ((canAccess < List[i].readWriteTime) && (tmpShift < memoryAccess.size()))
+			while ((canAccess < List[i].readWriteTime) && (tmpShift < op2MemAccess.size()))
 			{
-				if (memoryAccess[tmpShift] == 2 || op2RegAccess[tmpShift] != 0)
+				if ((op2MemAccess[tmpShift] + writeMemAccess[tmpShift]) == 2 || op2RegAccess[tmpShift] != 0)
 				{
 					canAccess = 0;
 				}
@@ -64,19 +63,16 @@ void Pipeline::SetShifts()
 				}
 				tmpShift++;
 			}
-			if (tmpShift >= memoryAccess.size())
+			if (tmpShift >= op2MemAccess.size())
 			{
-				memoryAccess.resize(memoryAccess.size() + (tmpShift - shift + 1) + List[i].readWriteTime + List[i].calculatingTime);
-				op2MemAccess.resize(memoryAccess.size());
-				op2RegAccess.resize(memoryAccess.size());
-				writeMemAccess.resize(memoryAccess.size());
-				writeRegAccess.resize(memoryAccess.size());
+				op2MemAccess.resize(op2MemAccess.size() + (tmpShift - shift + 1) + List[i].readWriteTime + List[i].calculatingTime);
+				op2RegAccess.resize(op2MemAccess.size());
+				writeMemAccess.resize(op2MemAccess.size());
+				writeRegAccess.resize(op2MemAccess.size());
 			}
 			for (int j = tmpShift - canAccess; j < tmpShift; j++)
 			{
-				memoryAccess[j]++;
-				if (op2MemAccess[j] < 1)
-					op2MemAccess[j]++;
+				op2MemAccess[j]++;
 			}
 			List[i].preOp2Shift += (tmpShift - canAccess - shift);		
 		}
@@ -87,7 +83,6 @@ void Pipeline::SetShifts()
 			if (tmpShift >= op2RegAccess.size())
 			{
 				op2RegAccess.resize(tmpShift);
-				memoryAccess.resize(op2RegAccess.size());
 				op2MemAccess.resize(op2RegAccess.size());		
 				writeMemAccess.resize(op2RegAccess.size());
 				writeRegAccess.resize(op2RegAccess.size());
@@ -124,13 +119,12 @@ void Pipeline::SetShifts()
 		List[i].preCalculatingShift = (tmpShift - canAccess - shift);
 
 		shift = tmpShift - canAccess + List[i].calculatingTime;	
-		if (shift >= memoryAccess.size())
+		if (shift >= writeMemAccess.size())
 		{
-			memoryAccess.resize(shift);
-			op2MemAccess.resize(memoryAccess.size());
-			op2RegAccess.resize(memoryAccess.size());
-			writeMemAccess.resize(memoryAccess.size());
-			writeRegAccess.resize(memoryAccess.size());
+			writeMemAccess.resize(shift);
+			op2MemAccess.resize(writeMemAccess.size());
+			op2RegAccess.resize(writeMemAccess.size());
+			writeRegAccess.resize(writeMemAccess.size());
 		}
 
 		//preWritingShift calculation
@@ -138,9 +132,9 @@ void Pipeline::SetShifts()
 		{
 			canAccess = 0;
 			tmpShift = shift;
-			while ((canAccess < List[i].readWriteTime) && (tmpShift < memoryAccess.size()))
+			while ((canAccess < List[i].readWriteTime) && (tmpShift < writeMemAccess.size()))
 			{
-				if (memoryAccess[tmpShift] == 2 || writeRegAccess[tmpShift] != 0)
+				if ((op2MemAccess[tmpShift] + writeMemAccess[tmpShift]) == 2 || writeRegAccess[tmpShift] != 0)
 				{
 					canAccess = 0;
 				}
@@ -150,20 +144,17 @@ void Pipeline::SetShifts()
 				}
 				tmpShift++;
 			}
-			if ((shift + List[i].readWriteTime) >= memoryAccess.size())
+			if ((shift + List[i].readWriteTime) >= writeMemAccess.size())
 			{			
-				memoryAccess.resize(memoryAccess.size() + (tmpShift - shift + 1) + List[i].readWriteTime);
-				op2MemAccess.resize(memoryAccess.size());
-				op2RegAccess.resize(memoryAccess.size());
-				writeMemAccess.resize(memoryAccess.size());
-				writeRegAccess.resize(memoryAccess.size());
+				writeMemAccess.resize(writeMemAccess.size() + (tmpShift - shift + 1) + List[i].readWriteTime);
+				op2MemAccess.resize(writeMemAccess.size());
+				op2RegAccess.resize(writeMemAccess.size());
+				writeRegAccess.resize(writeMemAccess.size());
 			}
 
 			for (int j = shift; j < shift + List[i].readWriteTime; j++)
 			{
-				memoryAccess[j]++;
-				if (writeMemAccess[j] < 1)
-					writeMemAccess[j]++;
+				writeMemAccess[j]++;
 			}
 			List[i].preWritingShift += (tmpShift - canAccess - shift);
 		}
@@ -174,7 +165,6 @@ void Pipeline::SetShifts()
 			if (tmpShift >= writeRegAccess.size())
 			{	
 				writeRegAccess.resize(tmpShift);
-				memoryAccess.resize(writeRegAccess.size());
 				op2MemAccess.resize(writeRegAccess.size());
 				op2RegAccess.resize(writeRegAccess.size());
 				writeMemAccess.resize(writeRegAccess.size());
