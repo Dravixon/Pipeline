@@ -2,7 +2,6 @@
 
 Command::Command(double P1, double P2, int N, int M)
 {
-	srand(std::time(NULL));
 	this->op2Mem = ((rand() % 100) < (P1 * 100)) ? false : true;
 	this->type = ((rand() % 100) < (P2 * 100)) ? 1 : 2;
 	this->readWriteTime = (op2Mem) ? N : 1;

@@ -6,17 +6,23 @@ int main()
 {
 	double P1, P2;
 	int N, M;
-	int num, button;
+	int num = 0, button = 0;
 
 	cout << "Choose the probability that the second operand is stored in the register (P1):" << endl
 		<< "Press '1': P1 = 0.9" << endl
 		<< "Press '2': P1 = 0.8" << endl
 		<< "Press '3': P1 = 0.6" << endl;
-	cin >> button;
 	while (button != 1 && button != 2 && button != 3)
 	{
-		cout << "Invalid input!" << endl;
 		cin >> button;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input!" << endl;
+		}
+		else if (button != 1 && button != 2 && button != 3)
+			cout << "Invalid input!" << endl;
 	}
 	switch (button)
 	{
@@ -40,11 +46,18 @@ int main()
 		<< "Press '1': N = 2" << endl
 		<< "Press '2': N = 5" << endl
 		<< "Press '3': N = 10" << endl;
-	cin >> button;
+	button = 0;
 	while (button != 1 && button != 2 && button != 3)
 	{
-		cout << "Invalid input!" << endl;
 		cin >> button;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input!" << endl;
+		}
+		else if (button != 1 && button != 2 && button != 3)
+			cout << "Invalid input!" << endl;
 	}
 	switch (button)
 	{
@@ -68,11 +81,18 @@ int main()
 		<< "Press '1': M = 4" << endl
 		<< "Press '2': M = 8" << endl
 		<< "Press '3': M = 16" << endl;
-	cin >> button;
+	button = 0;
 	while (button != 1 && button != 2 && button != 3)
 	{
-		cout << "Invalid input!" << endl;
 		cin >> button;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input!" << endl;
+		}
+		else if (button != 1 && button != 2 && button != 3)
+			cout << "Invalid input!" << endl;
 	}
 	switch (button)
 	{
@@ -96,11 +116,18 @@ int main()
 		<< "Press '1': P2 = 0.9" << endl
 		<< "Press '2': P2 = 0.7" << endl
 		<< "Press '3': P2 = 0.5" << endl;
-	cin >> button;
+	button = 0;
 	while (button != 1 && button != 2 && button != 3)
 	{
-		cout << "Invalid input!" << endl;
 		cin >> button;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input!" << endl;
+		}
+		else if (button != 1 && button != 2 && button != 3)
+			cout << "Invalid input!" << endl;
 	}
 	switch (button)
 	{
@@ -121,7 +148,18 @@ int main()
 		}
 	}
 	cout << "Input the number of commands: ";
-	cin >> num;
+	while (num <= 0)
+	{
+		cin >> num;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input!" << endl;
+		}
+		else if (num <= 0)
+			cout << "Invalid input!" << endl;
+	}
 
 	cout << "Current configuration: " << endl
 		<< "P1 = " << P1 << endl
